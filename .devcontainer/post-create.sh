@@ -28,7 +28,7 @@ if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
 
   if grep -q '"@playwright/test"' package.json 2>/dev/null; then
     echo "[post-create] Installing Playwright browsers and dependencies (frontend)..."
-    npx playwright install --with-deps
+    pnpm dlx playwright install --with-deps
   fi
 
   popd > /dev/null
