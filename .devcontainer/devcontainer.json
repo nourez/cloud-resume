@@ -1,0 +1,51 @@
+{
+  "name": "cloud-resume-2025",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "VARIANT": "ubuntu-24.04",
+      "NODE_VERSION": "24",
+      "PYTHON_VERSION": "3.12",
+      "OPEN_TOFU_VERSION": "1.9.0"
+    }
+  },
+
+  "remoteUser": "vscode",
+
+  "workspaceFolder": "/workspaces/cloud-resume",
+
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "editor.formatOnSave": true
+  },
+
+  "features": {},
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "svelte.svelte-vscode",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+
+        "hashicorp.terraform",
+        "bierner.markdown-mermaid",
+
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-playwright.playwright",
+
+        "eamodio.gitlens",
+        "github.vscode-github-actions"
+      ]
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh || true",
+
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb"
+  }
+}
