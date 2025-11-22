@@ -36,4 +36,4 @@ RUN arch="$(dpkg --print-architecture)" \
     && unzip /tmp/tofu.zip -d /tmp \
     && mv /tmp/tofu /usr/local/bin/tofu \
     && chmod +x /usr/local/bin/tofu \
-    && rm -rf /tmp/tofu /tmp/tofu.zip
+    && rm -rf /tmp/tofu.zip
