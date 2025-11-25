@@ -51,3 +51,12 @@ RUN set -eux; \
         install -m 0755 "${uvx_bin}" /usr/local/bin/uvx; \
     fi; \
     rm -rf "${tmpdir}" uv-${UV_ARCH}.tar.gz uv-${UV_ARCH}.tar.gz.sha256
+
+# ---- OpenTofu CLI ----
+# Download the architecture-appropriate OpenTofu archive and install the binary
+RUN arch="$(dpkg --print-architecture)" \
+    && curl -fsSL "https://github.com/opentofu/opentofu/releases/download/v${OPEN_TOFU_VERSION}/tofu_${OPEN_TOFU_VERSION}_linux_${arch}.zip" -o /tmp/tofu.zip \
+    && unzip /tmp/tofu.zip -d /tmp \
+    && mv /tmp/tofu /usr/local/bin/tofu \
+    && chmod +x /usr/local/bin/tofu \
+    && rm -rf /tmp/tofu.zip
