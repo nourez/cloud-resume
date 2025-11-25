@@ -6,6 +6,8 @@ FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 ARG NODE_VERSION="24"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
+ARG UV_VERSION=0.9.11
+ARG TARGETARCH
 
 USER root
 
@@ -23,11 +25,32 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     less \
     build-essential \
     python${PYTHON_VERSION} \
-    python3-pip \
     python3-venv \
     && ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python \
     && ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python3 \
     && rm -rf /var/lib/apt/lists/*
+
+# ---- Python tooling ----
+
+
+# Install UV from prebuilt binary and verify checksum
+RUN set -eux; \
+    case "${TARGETARCH:-}" in \
+        amd64) UV_ARCH="x86_64-unknown-linux-gnu" ;; \
+        arm64) UV_ARCH="aarch64-unknown-linux-gnu" ;; \
+        *) echo "Unsupported TARGETARCH: ${TARGETARCH:-unknown}" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSLO https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${UV_ARCH}.tar.gz; \
+    curl -fsSLO https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${UV_ARCH}.tar.gz.sha256; \
+    sha256sum --check uv-${UV_ARCH}.tar.gz.sha256; \
+    tmpdir="$(mktemp -d)"; \
+    tar -xzf uv-${UV_ARCH}.tar.gz -C "${tmpdir}"; \
+    uv_bin="$(find "${tmpdir}" -type f -name uv -print -quit)"; \
+    install -m 0755 "${uv_bin}" /usr/local/bin/uv; \
+    if uvx_bin="$(find "${tmpdir}" -type f -name uvx -print -quit)"; then \
+        install -m 0755 "${uvx_bin}" /usr/local/bin/uvx; \
+    fi; \
+    rm -rf "${tmpdir}" uv-${UV_ARCH}.tar.gz uv-${UV_ARCH}.tar.gz.sha256
 
 # ---- OpenTofu CLI ----
 # Download the architecture-appropriate OpenTofu archive and install the binary
