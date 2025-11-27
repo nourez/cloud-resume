@@ -9,6 +9,7 @@ ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
 ARG GO_VERSION="1.25.4"
 ARG SYFT_VERSION="1.38.0"
+ARG GRYPE_VERSION="0.104.1"
 ARG GOLANGCI_LINT_VERSION="2.6.2"
 ARG UV_VERSION=0.9.11
 ARG TARGETARCH
@@ -133,3 +134,19 @@ RUN set -eux; \
     tar -xzf "/tmp/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz" -C /tmp; \
     install -m 0755 "/tmp/syft" /usr/local/bin/syft; \
     rm -rf "/tmp/syft" "/tmp/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz" /tmp/syft_checksums.txt
+
+# ---- Grype CLI ----
+# Download the architecture-appropriate Grype binary, verify checksum, and install
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+    amd64) grype_arch="amd64" ;; \
+    arm64) grype_arch="arm64" ;; \
+    *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz" -o "/tmp/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz"; \
+    curl -fsSL "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_checksums.txt" -o /tmp/grype_checksums.txt; \
+    (cd /tmp && grep " grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz$" grype_checksums.txt | sha256sum --check --status); \
+    tar -xzf "/tmp/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz" -C /tmp; \
+    install -m 0755 "/tmp/grype" /usr/local/bin/grype; \
+    rm -rf "/tmp/grype" "/tmp/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz" /tmp/grype_checksums.txt
