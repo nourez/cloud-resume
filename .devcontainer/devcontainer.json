@@ -5,7 +5,7 @@
     "context": "..",
     "args": {
       "VARIANT": "ubuntu-24.04",
-      "NODE_VERSION": "24",
+      "NODE_VERSION": "24.11.1",
       "PYTHON_VERSION": "3.12",
       "OPEN_TOFU_VERSION": "1.9.0",
       "GO_VERSION": "1.22.5",

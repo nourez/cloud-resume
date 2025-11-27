@@ -3,7 +3,8 @@ ARG VARIANT="ubuntu-24.04"
 FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 
 # ---- Build args (tweak as needed) ----
-ARG NODE_VERSION="24"
+ARG NODE_VERSION="24.11.1"
+ARG PNPM_VERSION="9.15.0"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
 ARG GO_VERSION="1.22.5"
@@ -51,6 +52,27 @@ RUN arch="$(dpkg --print-architecture)" \
     && mv /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint /usr/local/bin/ \
     && chmod +x /usr/local/bin/golangci-lint \
     && rm -rf /tmp/golangci-lint*
+
+# ---- Node.js ----
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+    amd64) node_arch="linux-x64" ;; \
+    arm64) node_arch="linux-arm64" ;; \
+    *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
+    esac; \
+    tmpdir="$(mktemp -d)"; \
+    node_tar="node-v${NODE_VERSION}-${node_arch}.tar.xz"; \
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${node_tar}" -o "${tmpdir}/${node_tar}"; \
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o "${tmpdir}/SHASUMS256.txt"; \
+    (cd "${tmpdir}" && grep " ${node_tar}" SHASUMS256.txt | sha256sum --check --status); \
+    tar -xJf "${tmpdir}/${node_tar}" -C /usr/local --strip-components=1; \
+    rm -rf "${tmpdir}"
+
+# ---- PNPM ----
+RUN set -eux; \
+    corepack enable; \
+    corepack prepare "pnpm@${PNPM_VERSION}" --activate
 
 
 # ---- Python tooling ----
