@@ -4,6 +4,25 @@ set -euo pipefail
 echo "[post-create] Starting post-create setup..."
 
 ########################################
+# Env: pnpm global bin
+########################################
+# pnpm needs PNPM_HOME set for global installs (otherwise ERR_PNPM_NO_GLOBAL_BIN_DIR).
+PNPM_HOME="${PNPM_HOME:-/home/vscode/.local/share/pnpm}"
+export PNPM_HOME
+export PATH="${PNPM_HOME}:${HOME}/.local/bin:${PATH}"
+
+mkdir -p "${PNPM_HOME}"
+
+# Persist for interactive shells (bash/zsh)
+pnpm_env_snippet='export PNPM_HOME="${PNPM_HOME:-/home/vscode/.local/share/pnpm}"\nexport PATH="$PNPM_HOME:$HOME/.local/bin:$PATH"\n'
+if ! grep -Fq "PNPM_HOME" /home/vscode/.bashrc 2>/dev/null; then
+  printf "%b" "${pnpm_env_snippet}" >> /home/vscode/.bashrc
+fi
+if ! grep -Fq "PNPM_HOME" /home/vscode/.zshrc 2>/dev/null; then
+  printf "%b" "${pnpm_env_snippet}" >> /home/vscode/.zshrc
+fi
+
+########################################
 # Helper: ensure Node (nvm) is loaded
 ########################################
 use_node_default() {
@@ -81,8 +100,10 @@ git config --local gpg.ssh.program "$(which ssh-keygen)"
 git config --local commit.gpgsign true
 
 ########################################
-# 4. AI Tools
+# 4. Tools
 ########################################
-
+echo "[post-create] Installing tools..."
 pnpm install -g @openai/codex
 pnpm install -g @google/gemini-cli
+pnpm install -g @fission-ai/openspec@latest
+uv tool install awscli

@@ -8,6 +8,7 @@ ARG PNPM_VERSION="9.15.0"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
 ARG GO_VERSION="1.25.4"
+ARG SYFT_VERSION="1.38.0"
 ARG GOLANGCI_LINT_VERSION="2.6.2"
 ARG UV_VERSION=0.9.11
 ARG TARGETARCH
@@ -111,8 +112,24 @@ RUN set -eux; \
     tofu_zip="tofu_${OPEN_TOFU_VERSION}_linux_${arch}.zip"; \
     curl -fsSL "${base_url}/${tofu_zip}" -o "/tmp/${tofu_zip}"; \
     curl -fsSL "${base_url}/tofu_${OPEN_TOFU_VERSION}_SHA256SUMS" -o /tmp/tofu_SHA256SUMS; \
-    (cd /tmp && sha256sum --check --ignore-missing tofu_SHA256SUMS); \
+    (cd /tmp && grep " ${tofu_zip}$" tofu_SHA256SUMS | sha256sum --check --status); \
     unzip "/tmp/${tofu_zip}" -d /tmp; \
     mv /tmp/tofu /usr/local/bin/tofu; \
     chmod +x /usr/local/bin/tofu; \
     rm -rf "/tmp/${tofu_zip}" /tmp/tofu_SHA256SUMS
+
+# ---- Syft CLI ----
+# Download the architecture-appropriate Syft binary, verify checksum, and install
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+    amd64) syft_arch="amd64" ;; \
+    arm64) syft_arch="arm64" ;; \
+    *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz" -o "/tmp/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz"; \
+    curl -fsSL "https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/syft_${SYFT_VERSION}_checksums.txt" -o /tmp/syft_checksums.txt; \
+    (cd /tmp && grep " syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz$" syft_checksums.txt | sha256sum --check --status); \
+    tar -xzf "/tmp/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz" -C /tmp; \
+    install -m 0755 "/tmp/syft" /usr/local/bin/syft; \
+    rm -rf "/tmp/syft" "/tmp/syft_${SYFT_VERSION}_linux_${syft_arch}.tar.gz" /tmp/syft_checksums.txt
