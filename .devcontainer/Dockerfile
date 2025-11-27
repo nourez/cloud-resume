@@ -40,7 +40,7 @@ RUN arch="$(dpkg --print-architecture)" \
     && mkdir -p /go/bin
 
 ENV GOROOT=/usr/local/go
-ENV GOPATH=/go
+ENV GOPATH=/home/vscode/go
 ENV PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
 
 # ---- golangci-lint ----
