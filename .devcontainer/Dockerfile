@@ -6,6 +6,8 @@ FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 ARG NODE_VERSION="24"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
+ARG GO_VERSION="1.22.5"
+ARG GOLANGCI_LINT_VERSION="2.6.2"
 ARG UV_VERSION=0.9.11
 ARG TARGETARCH
 
@@ -30,9 +32,28 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python3 \
     && rm -rf /var/lib/apt/lists/*
 
+# ---- Go ----
+RUN arch="$(dpkg --print-architecture)" \
+    && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${arch}.tar.gz" -o /tmp/go.tar.gz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf /tmp/go.tar.gz \
+    && rm /tmp/go.tar.gz \
+    && mkdir -p /go/bin
+
+ENV GOROOT=/usr/local/go
+ENV GOPATH=/home/vscode/go
+ENV PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
+
+# ---- golangci-lint ----
+RUN arch="$(dpkg --print-architecture)" \
+    && curl -fsSL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}.tar.gz" -o /tmp/golangci-lint.tar.gz \
+    && tar -C /tmp -xzf /tmp/golangci-lint.tar.gz \
+    && mv /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint /usr/local/bin/ \
+    && chmod +x /usr/local/bin/golangci-lint \
+    && rm -rf /tmp/golangci-lint*
+
+
 # ---- Python tooling ----
-
-
 # Install UV from prebuilt binary and verify checksum
 RUN set -eux; \
     case "${TARGETARCH:-}" in \
