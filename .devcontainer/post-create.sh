@@ -1,108 +1,128 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "[post-create] Starting post-create setup..."
+log() { echo "[post-create] $*"; }
+warn() { echo "[post-create][warn] $*" >&2; }
 
-########################################
-# Env: pnpm global bin
-########################################
-# pnpm needs PNPM_HOME set for global installs (otherwise ERR_PNPM_NO_GLOBAL_BIN_DIR).
-PNPM_HOME="${PNPM_HOME:-/home/vscode/.local/share/pnpm}"
-export PNPM_HOME
-export PATH="${PNPM_HOME}:${HOME}/.local/bin:${PATH}"
-
-mkdir -p "${PNPM_HOME}"
-
-# Persist for interactive shells (bash/zsh)
-pnpm_env_snippet='export PNPM_HOME="${PNPM_HOME:-/home/vscode/.local/share/pnpm}"\nexport PATH="$PNPM_HOME:$HOME/.local/bin:$PATH"\n'
-if ! grep -Fq "PNPM_HOME" /home/vscode/.bashrc 2>/dev/null; then
-  printf "%b" "${pnpm_env_snippet}" >> /home/vscode/.bashrc
-fi
-if ! grep -Fq "PNPM_HOME" /home/vscode/.zshrc 2>/dev/null; then
-  printf "%b" "${pnpm_env_snippet}" >> /home/vscode/.zshrc
-fi
-
-########################################
-# Helper: ensure Node (nvm) is loaded
-########################################
-use_node_default() {
-  if [ -s "/usr/local/nvm/nvm.sh" ]; then
-    # shellcheck source=/dev/null
-    . "/usr/local/nvm/nvm.sh"
-    nvm use default || true
-  fi
-}
+log "Starting post-create setup..."
 
 ########################################
 # 1. frontend/ (Node + pnpm + Playwright)
 ########################################
-if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
-  echo "[post-create] Setting up frontend (Node + pnpm)..."
+setup_frontend() {
+  if [ ! -d "frontend" ] || [ ! -f "frontend/package.json" ]; then
+    log "Skipping frontend (frontend/ or package.json not found)."
+    return
+  fi
+
+  log "Setting up frontend (Node + pnpm)..."
   pushd frontend > /dev/null
 
   use_node_default
 
-  echo "[post-create] Installing Node dependencies with pnpm in ./frontend..."
+  log "Installing Node dependencies with pnpm in ./frontend..."
   pnpm install
 
   if grep -q '"@playwright/test"' package.json 2>/dev/null; then
-    echo "[post-create] Installing Playwright browsers and dependencies (frontend)..."
-    npx playwright install --with-deps
+    log "Installing Playwright browsers and dependencies (frontend)..."
+    pnpm run playwright install --with-deps
   fi
 
   popd > /dev/null
-else
-  echo "[post-create] Skipping frontend setup (frontend/ or frontend/package.json not found)."
-fi
+}
 
 ########################################
 # 2. api/ (Python via uv, uv-managed runtime)
 ########################################
-PY_VERSION="3.12"
+setup_api() {
+  local py_version="3.12"
 
-if [ -d "api" ]; then
-  echo "[post-create] Setting up api (Python via uv) in ./api..."
+  if [ ! -d "api" ]; then
+    log "Skipping api setup (api/ folder not found)."
+    return
+  fi
+
+  log "Setting up api (Python via uv) in ./api..."
   pushd api > /dev/null
 
-  # Ensure uv-managed Python runtime exists
-  echo "[post-create] Ensuring uv Python ${PY_VERSION} is installed..."
-  if ! uv python list | grep -q "${PY_VERSION}"; then
-    uv python install "${PY_VERSION}"
+  log "Ensuring uv Python ${py_version} is installed..."
+  if ! uv python list | grep -q "${py_version}"; then
+    uv python install "${py_version}"
   fi
 
-  # Create .venv using that runtime if it doesn't exist
   if [ ! -d ".venv" ]; then
-    echo "[post-create] Creating .venv with uv and Python ${PY_VERSION} in ./api..."
-    uv venv --python "${PY_VERSION}" .venv
+    log "Creating .venv with uv and Python ${py_version} in ./api..."
+    uv venv --python "${py_version}" .venv
   fi
 
-  # Sync deps if pyproject.toml exists
   if [ -f "pyproject.toml" ]; then
-    echo "[post-create] Syncing Python dependencies with uv in ./api..."
+    log "Syncing Python dependencies with uv in ./api..."
     uv sync
   else
-    echo "[post-create] No pyproject.toml in ./api yet, skipping uv sync."
+    log "No pyproject.toml in ./api yet, skipping uv sync."
   fi
 
   popd > /dev/null
-else
-  echo "[post-create] Skipping api setup (api/ folder not found)."
-fi
-
-echo "[post-create] All done."
+}
 
 ########################################
 # 3. SSH Based Git Commit Signing
 ########################################
 
-git config --local gpg.format ssh
-git config --local gpg.ssh.program "$(which ssh-keygen)"
-git config --local commit.gpgsign true
+setup_git_signing() {
+  git config --local gpg.format ssh
+  git config --local gpg.ssh.program "$(which ssh-keygen)"
+  git config --local commit.gpgsign true
+}
 
 ########################################
-# 4. Tools
+# 4. Tools (pnpm PATH + global CLIs)
 ########################################
-echo "[post-create] Installing tools..."
-pnpm install -g @openai/codex
-pnpm install -g @google/gemini-cli
-pnpm install -g @fission-ai/openspec@latest
+
+persist_pnpm_path() {
+  # pnpm global bin location (matches devcontainer feature default)
+  PNPM_HOME="${PNPM_HOME:-/home/vscode/.local/share/pnpm}"
+  mkdir -p "${PNPM_HOME}"
+  export PNPM_HOME
+
+  # Keep PATH consistent for current and future shells
+  export PATH="${PNPM_HOME}:${HOME}/.local/bin:/usr/local/share/nvm/versions/node/v24.11.1/bin:${PATH}"
+
+  local snippet
+  snippet=$(cat <<'EOF'
+# pnpm global tool path (added by post-create.sh)
+export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+export PATH="${PNPM_HOME}:${HOME}/.local/bin:/usr/local/share/nvm/versions/node/v24.11.1/bin:${PATH}"
+EOF
+)
+
+  for rc in "${HOME}/.profile" "${HOME}/.zprofile" "${HOME}/.zshrc"; do
+    touch "${rc}"
+    if ! grep -q 'pnpm global tool path' "${rc}"; then
+      printf '\n%s\n' "${snippet}" >> "${rc}"
+    fi
+  done
+}
+
+install_global_tools() {
+  persist_pnpm_path
+
+  if ! command -v pnpm >/dev/null 2>&1; then
+    log "pnpm not found; skipping CLI installs."
+    return
+  fi
+
+  log "Installing global CLIs via pnpm..."
+  pnpm install -g @openai/codex @google/gemini-cli @fission-ai/openspec@latest \
+    || warn "pnpm global install encountered issues (continuing)."
+}
+
+main() {
+  setup_frontend
+  setup_api
+  setup_git_signing
+  install_global_tools
+  log "All done."
+}
+
+main
