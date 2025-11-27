@@ -7,7 +7,7 @@ ARG NODE_VERSION="24.11.1"
 ARG PNPM_VERSION="9.15.0"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
-ARG GO_VERSION="1.22.5"
+ARG GO_VERSION="1.25.4"
 ARG GOLANGCI_LINT_VERSION="2.6.2"
 ARG UV_VERSION=0.9.11
 ARG TARGETARCH
@@ -34,24 +34,32 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # ---- Go ----
-RUN arch="$(dpkg --print-architecture)" \
-    && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${arch}.tar.gz" -o /tmp/go.tar.gz \
-    && rm -rf /usr/local/go \
-    && tar -C /usr/local -xzf /tmp/go.tar.gz \
-    && rm /tmp/go.tar.gz \
-    && mkdir -p /go/bin
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    tarball="go${GO_VERSION}.linux-${arch}.tar.gz"; \
+    curl -fsSL "https://go.dev/dl/${tarball}" -o "/tmp/${tarball}"; \
+    checksum=$(curl -fsSL "https://go.dev/dl/?mode=json" | jq -r ".[] | select(.version == \"go${GO_VERSION}\") | .files[] | select(.filename == \"${tarball}\") | .sha256"); \
+    echo "${checksum}  /tmp/${tarball}" | sha256sum --check -; \
+    rm -rf /usr/local/go; \
+    tar -C /usr/local -xzf "/tmp/${tarball}"; \
+    rm "/tmp/${tarball}"; \
+    mkdir -p /go/bin
 
 ENV GOROOT=/usr/local/go
 ENV GOPATH=/home/vscode/go
 ENV PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
 
 # ---- golangci-lint ----
-RUN arch="$(dpkg --print-architecture)" \
-    && curl -fsSL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}.tar.gz" -o /tmp/golangci-lint.tar.gz \
-    && tar -C /tmp -xzf /tmp/golangci-lint.tar.gz \
-    && mv /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint /usr/local/bin/ \
-    && chmod +x /usr/local/bin/golangci-lint \
-    && rm -rf /tmp/golangci-lint*
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    tarball="golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}.tar.gz"; \
+    base_url="https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}"; \
+    curl -fsSL "${base_url}/${tarball}" -o "/tmp/${tarball}"; \
+    curl -fsSL "${base_url}/golangci-lint-${GOLANGCI_LINT_VERSION}-checksums.txt" -o /tmp/golangci-lint-checksums.txt; \
+    (cd /tmp && grep " ${tarball}$" golangci-lint-checksums.txt | sha256sum --check --status); \
+    tar -C /tmp -xzf "/tmp/${tarball}"; \
+    install -m 0755 "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint" /usr/local/bin/golangci-lint; \
+    rm -rf "/tmp/${tarball}" "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}" /tmp/golangci-lint-checksums.txt
 
 # ---- Node.js ----
 RUN set -eux; \
