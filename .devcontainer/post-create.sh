@@ -106,4 +106,3 @@ echo "[post-create] Installing tools..."
 pnpm install -g @openai/codex
 pnpm install -g @google/gemini-cli
 pnpm install -g @fission-ai/openspec@latest
-uv tool install awscli
