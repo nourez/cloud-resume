@@ -85,3 +85,4 @@ git config --local commit.gpgsign true
 ########################################
 
 pnpm install -g @openai/codex
+pnpm install -g @google/gemini-cli
