@@ -7,7 +7,7 @@ ARG NODE_VERSION="24"
 ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
 ARG GO_VERSION="1.22.5"
-ARG GOLANGCI_LINT_VERSION="1.60.3"
+ARG GOLANGCI_LINT_VERSION="2.6.2"
 
 USER root
 
@@ -44,8 +44,12 @@ ENV GOPATH=/home/vscode/go
 ENV PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
 
 # ---- golangci-lint ----
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-    sh -s -- -b /usr/local/bin "v${GOLANGCI_LINT_VERSION}"
+RUN arch="$(dpkg --print-architecture)" \
+    && curl -fsSL "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}.tar.gz" -o /tmp/golangci-lint.tar.gz \
+    && tar -C /tmp -xzf /tmp/golangci-lint.tar.gz \
+    && mv /tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint /usr/local/bin/ \
+    && chmod +x /usr/local/bin/golangci-lint \
+    && rm -rf /tmp/golangci-lint*
 
 # ---- OpenTofu CLI ----
 # Download the architecture-appropriate OpenTofu archive and install the binary
