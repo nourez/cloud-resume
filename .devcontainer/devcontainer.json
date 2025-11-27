@@ -5,11 +5,10 @@
     "context": "..",
     "args": {
       "VARIANT": "ubuntu-24.04",
-      "NODE_VERSION": "24.11.1",
-      "PYTHON_VERSION": "3.12",
       "OPEN_TOFU_VERSION": "1.9.0",
-      "GO_VERSION": "1.25.4",
-      "GOLANGCI_LINT_VERSION": "2.6.2"
+      "SYFT_VERSION": "1.38.0",
+      "GRYPE_VERSION": "0.104.1",
+      "UV_VERSION": "0.9.11"
     }
   },
 
@@ -22,7 +21,22 @@
     "editor.formatOnSave": true
   },
 
-  "features": {},
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24.11.1",
+      "installYarn": false,
+      "installPnpm": true,
+      "pnpmVersion": "9.15.0"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.25.4",
+      "installGolangciLint": true,
+      "golangciLintVersion": "2.6.2"
+    }
+  },
 
   "customizations": {
     "vscode": {

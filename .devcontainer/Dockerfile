@@ -3,15 +3,10 @@ ARG VARIANT="ubuntu-24.04"
 FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 
 # ---- Build args (tweak as needed) ----
-ARG NODE_VERSION="24.11.1"
-ARG PNPM_VERSION="9.15.0"
-ARG PYTHON_VERSION="3.12"
 ARG OPEN_TOFU_VERSION="1.9.0"
-ARG GO_VERSION="1.25.4"
 ARG SYFT_VERSION="1.38.0"
 ARG GRYPE_VERSION="0.104.1"
-ARG GOLANGCI_LINT_VERSION="2.6.2"
-ARG UV_VERSION=0.9.11
+ARG UV_VERSION="0.9.11"
 ARG TARGETARCH
 
 USER root
@@ -21,71 +16,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
-    wget \
-    git \
-    gnupg2 \
-    openssh-client \
     unzip \
     jq \
     less \
     build-essential \
-    python${PYTHON_VERSION} \
-    python3-venv \
-    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python \
-    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# ---- Go ----
-RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    tarball="go${GO_VERSION}.linux-${arch}.tar.gz"; \
-    curl -fsSL "https://go.dev/dl/${tarball}" -o "/tmp/${tarball}"; \
-    checksum=$(curl -fsSL "https://go.dev/dl/?mode=json" | jq -r ".[] | select(.version == \"go${GO_VERSION}\") | .files[] | select(.filename == \"${tarball}\") | .sha256"); \
-    echo "${checksum}  /tmp/${tarball}" | sha256sum --check -; \
-    rm -rf /usr/local/go; \
-    tar -C /usr/local -xzf "/tmp/${tarball}"; \
-    rm "/tmp/${tarball}"; \
-    mkdir -p /go/bin
-
-ENV GOROOT=/usr/local/go
-ENV GOPATH=/home/vscode/go
-ENV PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"
-
-# ---- golangci-lint ----
-RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    tarball="golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}.tar.gz"; \
-    base_url="https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}"; \
-    curl -fsSL "${base_url}/${tarball}" -o "/tmp/${tarball}"; \
-    curl -fsSL "${base_url}/golangci-lint-${GOLANGCI_LINT_VERSION}-checksums.txt" -o /tmp/golangci-lint-checksums.txt; \
-    (cd /tmp && grep " ${tarball}$" golangci-lint-checksums.txt | sha256sum --check --status); \
-    tar -C /tmp -xzf "/tmp/${tarball}"; \
-    install -m 0755 "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}/golangci-lint" /usr/local/bin/golangci-lint; \
-    rm -rf "/tmp/${tarball}" "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${arch}" /tmp/golangci-lint-checksums.txt
-
-# ---- Node.js ----
-RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    case "$arch" in \
-    amd64) node_arch="linux-x64" ;; \
-    arm64) node_arch="linux-arm64" ;; \
-    *) echo "Unsupported architecture: ${arch}" >&2; exit 1 ;; \
-    esac; \
-    tmpdir="$(mktemp -d)"; \
-    node_tar="node-v${NODE_VERSION}-${node_arch}.tar.xz"; \
-    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/${node_tar}" -o "${tmpdir}/${node_tar}"; \
-    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o "${tmpdir}/SHASUMS256.txt"; \
-    (cd "${tmpdir}" && grep " ${node_tar}" SHASUMS256.txt | sha256sum --check --status); \
-    tar -xJf "${tmpdir}/${node_tar}" -C /usr/local --strip-components=1; \
-    rm -rf "${tmpdir}"
-
-# ---- PNPM ----
-RUN set -eux; \
-    corepack enable; \
-    corepack prepare "pnpm@${PNPM_VERSION}" --activate
-
-
-# ---- Python tooling ----
+# ---- Python tooling (uv) ----
 # Install UV from prebuilt binary and verify checksum
 RUN set -eux; \
     case "${TARGETARCH:-}" in \
@@ -150,3 +87,5 @@ RUN set -eux; \
     tar -xzf "/tmp/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz" -C /tmp; \
     install -m 0755 "/tmp/grype" /usr/local/bin/grype; \
     rm -rf "/tmp/grype" "/tmp/grype_${GRYPE_VERSION}_linux_${grype_arch}.tar.gz" /tmp/grype_checksums.txt
+
+USER vscode
