@@ -54,8 +54,7 @@ git config --local commit.gpgsign false
 1. Ensure your SSH key is available inside the container (mount or copy it)
 2. Set your signing key:
    ```bash
-   git config --local user.signingkey ~/.ssh/id_ed25519.pub
-   ```
+   git config --local user.signingkey /path/to/your/public_ssh_key.pub
 
 #### Option 3: Use GPG Signing Instead
 1. Install GPG and import your key
