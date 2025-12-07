@@ -65,9 +65,9 @@ git config --local commit.gpgsign false
    ```
 
 #### Option 4: Forward Your Local SSH Agent
-If you're using VS Code Remote Containers or another tool, ensure SSH agent forwarding is enabled:
+If you're using VS Code Remote Containers or another tool, ensure SSH agent forwarding is enabled. The first two steps should be run on your **local machine's terminal**:
 1. Start your local SSH agent: `eval "$(ssh-agent -s)"`
-2. Add your key: `ssh-add ~/.ssh/id_ed25519`
+2. Add your key: `ssh-add /path/to/your/private_ssh_key`
 3. Ensure your devcontainer tool forwards the `SSH_AUTH_SOCK` environment variable
 
 ## Post-Create Setup
