@@ -70,7 +70,7 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/post-create.sh || true",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
 
   "hostRequirements": {
     "cpus": 2,
