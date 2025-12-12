@@ -92,7 +92,7 @@ persist_pnpm_path() {
   snippet=$(cat <<'EOF'
 # pnpm global tool path (added by post-create.sh)
 export PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
-export PATH="${PNPM_HOME}:${HOME}/.local/bin:/usr/local/share/nvm/versions/node/v24.11.1/bin:${PATH}"
+export PATH="${PNPM_HOME}:${HOME}/.local/bin:${PATH}"
 EOF
 )
 
