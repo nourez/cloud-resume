@@ -40,7 +40,8 @@ setup_frontend() {
 # 2. api/ (Python via uv, uv-managed runtime)
 ########################################
 setup_api() {
-  local py_version="3.12"
+  local py_version
+  py_version=$(jq -r '.features."ghcr.io/devcontainers/features/python:1".version' .devcontainer/devcontainer.json)
 
   if [ ! -d "api" ]; then
     log "Skipping api setup (api/ folder not found)."
