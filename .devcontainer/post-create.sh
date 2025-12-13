@@ -18,7 +18,12 @@ setup_frontend() {
   log "Setting up frontend (Node + pnpm)..."
   pushd frontend > /dev/null
 
-  use_node_default
+  # use_node_default is provided by the devcontainer node feature to activate the default version.
+  if command -v use_node_default >/dev/null 2>&1; then
+    use_node_default
+  else
+    warn "'use_node_default' command not found. The node feature might have changed."
+  fi
 
   log "Installing Node dependencies with pnpm in ./frontend..."
   pnpm install
