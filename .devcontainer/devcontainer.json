@@ -1,0 +1,79 @@
+{
+  "name": "cloud-resume-2025",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "VARIANT": "ubuntu-24.04"
+    }
+  },
+
+  "remoteUser": "vscode",
+
+  "workspaceFolder": "/workspaces/cloud-resume",
+
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "editor.formatOnSave": true
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24.11.1",
+      "installYarn": false,
+      "installPnpm": true,
+      "pnpmVersion": "9.15.0"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {
+      "version": "0.9.11"
+    },
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.25.4",
+      "installGolangciLint": true,
+      "golangciLintVersion": "2.6.2"
+    },
+    "ghcr.io/devcontainers-extra/features/grype:1": {
+      "version": "0.104.1"
+    },
+    "ghcr.io/devcontainers-extra/features/syft:1": {
+      "version": "1.38.0"
+    },
+    "ghcr.io/devcontainers-extra/features/opentofu:1": {
+      "version": "1.9.0"
+    },
+    "ghcr.io/devcontainers/features/aws-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "svelte.svelte-vscode",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+
+        "hashicorp.terraform",
+        "bierner.markdown-mermaid",
+
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-playwright.playwright",
+        "golang.Go",
+
+        "eamodio.gitlens",
+        "github.vscode-github-actions"
+      ]
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb"
+  }
+}
