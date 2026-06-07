@@ -35,9 +35,6 @@
       }
     }
   },
-  "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
-  ],
   "forwardPorts": [5173],
   "portsAttributes": {
     "5173": {
