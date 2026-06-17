@@ -4,6 +4,11 @@ packages:
   - 'iac'
   - 'packages/*'
 
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAge: 0
+
 catalog:
   typescript: ^5.8.0
   '@types/node': ^22.0.0

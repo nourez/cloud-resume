@@ -42,4 +42,4 @@ This repo uses three layers to enforce pnpm:
 
 1. **Corepack** — pins pnpm to the version in root `package.json` (`packageManager` field)
 2. **`only-allow`** — blocks npm/yarn in the `preinstall` script
-3. **`engine-strict`** — enforces Node >= 20 and pnpm >= 9.15.0 via `.npmrc`
+3. **`engine-strict`** — enforces Node >= 20 and pnpm >= 11.7.0 via `.npmrc`

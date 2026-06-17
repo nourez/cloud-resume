@@ -50,6 +50,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "bash -lc 'corepack enable && pnpm install && npm install -g @fission-ai/openspec@latest'",
+  "postCreateCommand": "bash -lc 'corepack enable && corepack prepare pnpm@11.7.0 --activate && CI=true pnpm install && npm install -g @fission-ai/openspec@latest'",
   "remoteUser": "vscode"
 }
