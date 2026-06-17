@@ -32,7 +32,7 @@ pnpm install
 |---------|-------------|
 | `pnpm dev:frontend` | Serve static frontend on port 8080 |
 | `pnpm dev:api` | Run API dev server on port 3000 |
-| `pnpm -r typecheck` | Typecheck all TypeScript packages |
+| `pnpm typecheck` | Typecheck all TypeScript packages |
 | `pnpm -r build` | Build all packages |
 | `pnpm --filter @cloud-resume/iac synth` | Synthesize CDK stack |
 
