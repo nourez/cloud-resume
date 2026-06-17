@@ -1,5 +1,5 @@
 {
-  "app": "npx tsx bin/cloud-resume.ts",
+  "app": "pnpm exec tsx bin/cloud-resume.ts",
   "watch": {
     "include": ["**"],
     "exclude": [
