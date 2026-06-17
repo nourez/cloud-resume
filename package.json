@@ -11,7 +11,7 @@
     "dev:api": "pnpm --filter @cloud-resume/api dev",
     "dev:frontend": "pnpm --filter @cloud-resume/frontend dev",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @cloud-resume/shared-types build && pnpm -r typecheck",
     "lint": "echo \"Lint not configured yet\""
   },
   "devDependencies": {
