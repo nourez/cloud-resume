@@ -1,0 +1,22 @@
+{
+  "name": "@cloud-resume/iac",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.200.0",
+    "constructs": "^10.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "aws-cdk": "^2.200.0",
+    "tsx": "^4.19.0",
+    "typescript": "catalog:"
+  }
+}
