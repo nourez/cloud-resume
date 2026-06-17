@@ -50,6 +50,11 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "bash -lc 'corepack enable && corepack prepare pnpm@11.7.0 --activate && CI=true pnpm install && npm install -g @fission-ai/openspec@latest'",
+  "remoteEnv": {
+    "PNPM_HOME": "/home/vscode/.local/share/pnpm",
+    "PATH": "/home/vscode/.local/share/pnpm/bin:${containerEnv:PATH}",
+    "CI": "true"
+  },
+  "postCreateCommand": "bash -lc 'corepack enable && corepack prepare pnpm@11.7.0 --activate && export PNPM_HOME=\"$HOME/.local/share/pnpm\" && mkdir -p \"$PNPM_HOME/bin\" && export PATH=\"$PNPM_HOME/bin:$PATH\" && pnpm install && pnpm add -g --allow-build @fission-ai/openspec @fission-ai/openspec@latest'",
   "remoteUser": "vscode"
 }
