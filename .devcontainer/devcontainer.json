@@ -35,13 +35,26 @@
       }
     }
   },
-  "forwardPorts": [5173],
+  "forwardPorts": [3000, 5173, 8080],
   "portsAttributes": {
+    "3000": {
+      "label": "API",
+      "onAutoForward": "notify"
+    },
     "5173": {
       "label": "Svelte/Vite Dev Server",
       "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Frontend",
+      "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "bash -lc 'npm install -g @fission-ai/openspec@latest'",
+  "remoteEnv": {
+    "PNPM_HOME": "/home/vscode/.local/share/pnpm",
+    "PATH": "/home/vscode/.local/share/pnpm/bin:${containerEnv:PATH}",
+    "CI": "true"
+  },
+  "postCreateCommand": "bash -lc 'corepack enable && corepack prepare pnpm@11.7.0 --activate && export PNPM_HOME=\"$HOME/.local/share/pnpm\" && mkdir -p \"$PNPM_HOME/bin\" && export PATH=\"$PNPM_HOME/bin:$PATH\" && pnpm install && pnpm add -g --allow-build=@fission-ai/openspec @fission-ai/openspec@latest'",
   "remoteUser": "vscode"
 }

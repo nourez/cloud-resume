@@ -1,0 +1,22 @@
+{
+  "name": "cloud-resume",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=11.7.0"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev:api": "pnpm --filter @cloud-resume/api dev",
+    "dev:frontend": "pnpm --filter @cloud-resume/frontend dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm --filter @cloud-resume/shared-types build && pnpm -r typecheck",
+    "lint": "echo \"Lint not configured yet\""
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "catalog:"
+  }
+}

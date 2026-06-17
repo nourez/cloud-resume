@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+cdk.out/
+.cdk.staging/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Frontend (future Svelte/Vite)
+.vite/
+.svelte-kit/
+
+# Package managers (pnpm-only monorepo)
+package-lock.json
+yarn.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*~
+*.swp
+
+# Tool caches (when ESLint/Prettier configs are added)
+.eslintcache
+.prettiercache
+
+# AWS deployment artifacts
+*.zip
