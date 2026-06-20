@@ -23,6 +23,6 @@ root `package.json` scripts.
   `engine-strict` in `.npmrc`. Always use pnpm.
 - `pnpm typecheck` builds `@cloud-resume/shared-types` first (the API imports its compiled
   output), so run it (or build shared-types) before typechecking the API in isolation.
-- `pnpm lint` is currently a stub (`echo "Lint not configured yet"`) — it is a no-op, not a
-  real linter.
+- `pnpm lint` runs ESLint from the repo root and checks both TypeScript and JavaScript sources.
+- `pnpm format:check` runs Prettier in check mode from the repo root.
 - No database, no `.env`, and no secrets are required to run anything locally.

@@ -12,10 +12,18 @@
     "dev:frontend": "pnpm --filter @cloud-resume/frontend dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm --filter @cloud-resume/shared-types build && pnpm -r typecheck",
-    "lint": "echo \"Lint not configured yet\""
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "devDependencies": {
-    "eslint": "^9.0.0",
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
     "prettier": "^3.0.0",
     "typescript": "catalog:"
   }
