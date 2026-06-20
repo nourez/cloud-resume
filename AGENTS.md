@@ -24,5 +24,7 @@ root `package.json` scripts.
 - `pnpm typecheck` builds `@cloud-resume/shared-types` first (the API imports its compiled
   output), so run it (or build shared-types) before typechecking the API in isolation.
 - `pnpm lint` runs ESLint from the repo root and checks both TypeScript and JavaScript sources.
+- `pnpm lint:modules` runs lint package-by-package (`frontend`, `api`, `iac`, `shared-types`).
 - `pnpm format:check` runs Prettier in check mode from the repo root.
+- `pnpm format:check:modules` runs format checks package-by-package.
 - No database, no `.env`, and no secrets are required to run anything locally.

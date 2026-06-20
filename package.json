@@ -14,8 +14,22 @@
     "typecheck": "pnpm --filter @cloud-resume/shared-types build && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:frontend": "pnpm --filter @cloud-resume/frontend lint",
+    "lint:api": "pnpm --filter @cloud-resume/api lint",
+    "lint:iac": "pnpm --filter @cloud-resume/iac lint",
+    "lint:shared-types": "pnpm --filter @cloud-resume/shared-types lint",
+    "lint:modules": "pnpm lint:frontend && pnpm lint:api && pnpm lint:iac && pnpm lint:shared-types",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "format:frontend": "pnpm --filter @cloud-resume/frontend format",
+    "format:api": "pnpm --filter @cloud-resume/api format",
+    "format:iac": "pnpm --filter @cloud-resume/iac format",
+    "format:shared-types": "pnpm --filter @cloud-resume/shared-types format",
+    "format:check:frontend": "pnpm --filter @cloud-resume/frontend format:check",
+    "format:check:api": "pnpm --filter @cloud-resume/api format:check",
+    "format:check:iac": "pnpm --filter @cloud-resume/iac format:check",
+    "format:check:shared-types": "pnpm --filter @cloud-resume/shared-types format:check",
+    "format:check:modules": "pnpm format:check:frontend && pnpm format:check:api && pnpm format:check:iac && pnpm format:check:shared-types"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

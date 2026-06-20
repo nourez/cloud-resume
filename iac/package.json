@@ -7,7 +7,11 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "synth": "cdk synth",
-    "deploy": "cdk deploy"
+    "deploy": "cdk deploy",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --ignore-path ../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../.prettierignore --check"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.200.0",
