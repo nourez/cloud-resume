@@ -8,10 +8,10 @@ so you normally do not need to install anything manually.
 
 ### Services
 
-| Service | Dir | Dev command | Port | Notes |
-|---------|-----|-------------|------|-------|
+| Service                       | Dir         | Dev command         | Port | Notes                                                                                                 |
+| ----------------------------- | ----------- | ------------------- | ---- | ----------------------------------------------------------------------------------------------------- |
 | Frontend (static résumé site) | `frontend/` | `pnpm dev:frontend` | 8080 | The product; renders the résumé client-side from `frontend/js/resume-data.js`. Does NOT call the API. |
-| API (Express health stub) | `api/` | `pnpm dev:api` | 3000 | Only exposes `GET /health` → `{"status":"ok"}`. Scaffold for future dynamic features. |
+| API (Express health stub)     | `api/`      | `pnpm dev:api`      | 3000 | Only exposes `GET /health` → `{"status":"ok"}`. Scaffold for future dynamic features.                 |
 
 Build-only packages (not long-running services): `packages/shared-types` (shared TS types,
 `tsc`) and `iac` (AWS CDK deploy tooling). Standard commands live in `README.md` and the

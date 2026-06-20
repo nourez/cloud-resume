@@ -1,3 +1,4 @@
+.cursor
 node_modules
 dist
 build
@@ -7,3 +8,4 @@ cdk.out
 .pnpm-store
 .vite
 .svelte-kit
+pnpm-lock.yaml
