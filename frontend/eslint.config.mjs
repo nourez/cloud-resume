@@ -1,5 +1,9 @@
 import eslintConfigPrettier from 'eslint-config-prettier';
-import { createBrowserJsConfig, createNodeJsConfig, ignoreConfig } from '../eslint/shared.mjs';
+import {
+  createBrowserJsConfig,
+  createNodeJsConfig,
+  ignoreConfig,
+} from '../packages/eslint-config/shared.mjs';
 
 export default [
   ignoreConfig,
