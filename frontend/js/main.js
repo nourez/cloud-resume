@@ -84,7 +84,7 @@
     data.education.forEach(function (entry) {
       var item = el('div', 'education-entry');
       item.appendChild(
-        el('p', 'entry-heading', entry.degree + ', ' + entry.school + ', ' + entry.dates)
+        el('p', 'entry-heading', entry.degree + ', ' + entry.school + ', ' + entry.dates),
       );
       if (entry.details) {
         item.appendChild(el('p', 'entry-detail', entry.details));
@@ -118,8 +118,8 @@
         el(
           'h3',
           'job-title',
-          job.title + ', ' + job.company + ', ' + job.location + ', ' + job.dates
-        )
+          job.title + ', ' + job.company + ', ' + job.location + ', ' + job.dates,
+        ),
       );
       if (job.description) {
         entry.appendChild(el('p', 'company-description', job.description));

@@ -21,8 +21,7 @@ window.resumeData = {
   ],
   skills: {
     languages: 'TypeScript, JavaScript, Python, HTML, CSS, Java',
-    libraries:
-      'ReactJS, NodeJS, Jest, NextJS, AWS CDK, AWS SDK, Terraform',
+    libraries: 'ReactJS, NodeJS, Jest, NextJS, AWS CDK, AWS SDK, Terraform',
     platforms:
       'Amazon Web Services (AWS), Microsoft Azure, Docker, Kubernetes, Linux, Windows, macOS',
     tools:

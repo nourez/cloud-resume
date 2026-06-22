@@ -12,7 +12,11 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --ignore-path ../../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../../.prettierignore --check"
   },
   "devDependencies": {
     "typescript": "catalog:"

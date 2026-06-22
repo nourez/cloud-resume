@@ -28,13 +28,20 @@ pnpm install
 
 ## Common commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev:frontend` | Serve static frontend on port 8080 |
-| `pnpm dev:api` | Run API dev server on port 3000 |
-| `pnpm typecheck` | Typecheck all TypeScript packages |
-| `pnpm -r build` | Build all packages |
-| `pnpm --filter @cloud-resume/iac synth` | Synthesize CDK stack |
+| Command                                 | Description                        |
+| --------------------------------------- | ---------------------------------- |
+| `pnpm dev:frontend`                     | Serve static frontend on port 8080 |
+| `pnpm dev:api`                          | Run API dev server on port 3000    |
+| `pnpm lint`                             | Lint all JS/TS with ESLint         |
+| `pnpm lint:modules`                     | Lint frontend/api/iac/shared-types |
+| `pnpm format:check`                     | Check formatting with Prettier     |
+| `pnpm format:check:modules`             | Check formatting per workspace     |
+| `pnpm typecheck`                        | Typecheck all TypeScript packages  |
+| `pnpm -r build`                         | Build all packages                 |
+| `pnpm --filter @cloud-resume/iac synth` | Synthesize CDK stack               |
+
+You can also run the same lint/format commands inside each package directory (for example
+`cd api && pnpm lint`, `cd frontend && pnpm format:check`).
 
 ## Package manager enforcement
 

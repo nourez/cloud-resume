@@ -1,0 +1,11 @@
+.cursor
+node_modules
+dist
+build
+coverage
+cdk.out
+.cdk.staging
+.pnpm-store
+.vite
+.svelte-kit
+pnpm-lock.yaml
